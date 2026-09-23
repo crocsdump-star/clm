@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Midterm Math Reviewer — College Logic & Math</title>
+<style>
+  :root{
+    --bg:#0f1420; --panel:#171d2e; --panel2:#1e2740; --border:#2b3654;
+    --text:#eef1f8; --muted:#9aa5c0; --accent:#6ea8fe; --accent2:#7ee8b8;
+    --warn:#ffd166; --bad:#ff6b6b; --good:#5ee6a0;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    background:linear-gradient(160deg,#0b0f19,#141a2b 60%,#0f1420);
+    color:var(--text); min-height:100vh;
+  }
+  header{
+    padding:22px 20px 14px; text-align:center;
+    border-bottom:1px solid var(--border);
+    background:rgba(255,255,255,0.02);
+  }
+  header h1{margin:0 0 4px; font-size:1.5rem; letter-spacing:.3px;}
+  header p{margin:0; color:var(--muted); font-size:.9rem;}
+  .examdate{
+    display:inline-block; margin-top:10px; padding:6px 14px; border-radius:999px;
+    background:rgba(110,168,254,.12); border:1px solid rgba(110,168,254,.4);
+    color:var(--accent); font-size:.8rem; font-weight:600;
+  }
+
+  .wrap{max-width:980px; margin:0 auto; padding:18px 14px 60px;}
+
+  nav#tabs{
+    display:flex; flex-wrap:wrap; gap:8px; justify-content:center;
+    margin:18px 0 22px; position:sticky; top:0; z-index:10;
+    background:rgba(15,20,32,.92); backdrop-filter:blur(6px);
+    padding:10px 6px; border-radius:16px; border:1px solid var(--border);
+  }
+  nav#tabs button{
+    background:var(--panel2); color:var(--muted); border:1px solid var(--border);
+    padding:8px 13px; border-radius:999px; font-size:.78rem; cursor:pointer;
+    transition:.15s; font-weight:600; white-space:nowrap;
+  }
+  nav#tabs button:hover{color:var(--text); border-color:var(--accent);}
+  nav#tabs button.active{background:var(--accent); color:#0b0f19; border-color:var(--accent);}
+
+  section.topic{display:none; animation:fade .25s ease;}
+  section.topic.active{display:block;}
+  @keyframes fade{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;}}
+
+  .card{
+    background:var(--panel); border:1px solid var(--border); border-radius:var(--radius);
+    padding:18px 18px; margin-bottom:16px;
+  }
+  .card h2{margin:0 0 4px; font-size:1.2rem;}
+  .card .sub{color:var(--muted); font-size:.85rem; margin-bottom:12px;}
+  .card h3{font-size:.95rem; color:var(--accent); margin:16px 0 8px;}
+  .card h3:first-of-type{margin-top:4px;}
+  .card ul{margin:6px 0; padding-left:20px;}
+  .card li{margin:4px 0; font-size:.92rem; line-height:1.5;}
+  .card p{font-size:.92rem; line-height:1.55; margin:6px 0;}
+  code, .math{
+    font-family:'Cambria Math','Consolas',monospace; background:rgba(255,255,255,.06);
+    padding:1px 6px; border-radius:6px; font-size:.92em;
+  }
+  .formula{
+    background:var(--panel2); border-left:3px solid var(--accent); padding:8px 12px;
+    border-radius:8px; margin:6px 0; font-family:'Cambria Math',monospace; font-size:.93rem;
+  }
+  table.ref{width:100%; border-collapse:collapse; font-size:.86rem; margin:8px 0;}
+  table.ref th, table.ref td{border:1px solid var(--border); padding:6px 9px; text-align:center;}
+  table.ref th{background:var(--panel2); color:var(--accent);}
+
+  .example{
+    background:rgba(126,232,184,.06); border:1px dashed rgba(126,232,184,.35);
+    border-radius:10px; padding:10px 13px; margin:10px 0; font-size:.9rem;
+  }
+  .example b{color:var(--accent2);}
+
+  /* Flashcards */
+  .flash-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; margin-top:8px;}
+  .flash{
+    perspective:1000px; height:130px; cursor:pointer;
+  }
+  .flash-inner{
+    position:relative; width:100%; height:100%; transition:transform .5s;
+    transform-style:preserve-3d;
+  }
+  .flash.flipped .flash-inner{transform:rotateY(180deg);}
+  .flash-face{
+    position:absolute; inset:0; backface-visibility:hidden; border-radius:12px;
+    display:flex; align-items:center; justify-content:center; text-align:center;
+    padding:10px; font-size:.85rem; line-height:1.35; border:1px solid var(--border);
+  }
+  .flash-front{background:var(--panel2); color:var(--text); font-weight:600;}
+  .flash-back{background:rgba(110,168,254,.12); color:var(--text); transform:rotateY(180deg); border-color:var(--accent);}
+  .flash-hint{position:absolute; bottom:4px; right:8px; font-size:.65rem; color:var(--muted);}
+
+  /* Quiz */
+  .quiz-box{border:1px solid var(--border); border-radius:12px; padding:14px; margin-top:6px;}
+  .quiz-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
+  .score-pill{
+    background:var(--panel2); border:1px solid var(--border); border-radius:999px;
+    padding:5px 12px; font-size:.8rem; font-weight:700; color:var(--accent2);
+  }
+  .q{margin-bottom:18px; padding-bottom:14px; border-bottom:1px solid var(--border);}
+  .q:last-child{border-bottom:none;}
+  .q-prompt{font-size:.93rem; font-weight:600; margin-bottom:8px;}
+  .opt{
+    display:block; width:100%; text-align:left; background:var(--panel2); color:var(--text);
+    border:1px solid var(--border); border-radius:8px; padding:8px 12px; margin:5px 0;
+    cursor:pointer; font-size:.87rem; transition:.15s;
+  }
+  .opt:hover{border-color:var(--accent);}
+  .opt.correct{background:rgba(94,230,160,.18); border-color:var(--good); color:var(--good);}
+  .opt.wrong{background:rgba(255,107,107,.18); border-color:var(--bad); color:var(--bad);}
+  .opt[disabled]{cursor:default;}
+  .explain{
+    display:none; margin-top:8px; font-size:.83rem; color:var(--muted);
+    background:rgba(255,255,255,.04); padding:8px 10px; border-radius:8px;
+  }
+  .explain.show{display:block;}
+  .btnrow{display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;}
+  button.primary{
+    background:var(--accent); color:#0b0f19; border:none; padding:9px 16px;
+    border-radius:9px; font-weight:700; cursor:pointer; font-size:.85rem;
+  }
+  button.ghost{
+    background:transparent; color:var(--muted); border:1px solid var(--border);
+    padding:9px 16px; border-radius:9px; cursor:pointer; font-size:.85rem;
+  }
+  button.primary:hover{filter:brightness(1.08);}
+  button.ghost:hover{color:var(--text); border-color:var(--accent);}
+
+  .result-banner{
+    margin-top:12px; padding:12px 14px; border-radius:10px; font-size:.9rem; font-weight:600;
+    display:none;
+  }
+  .result-banner.show{display:block;}
+
+  /* Try-it-yourself reveal problems */
+  .try-box{
+    border:1px solid var(--border); border-radius:12px; padding:14px 16px; margin:10px 0;
+    background:rgba(255,255,255,.02);
+  }
+  .try-q{font-size:.9rem; font-weight:600; margin-bottom:10px;}
+  .reveal-btn{
+    background:transparent; color:var(--accent); border:1px solid var(--accent);
+    padding:7px 14px; border-radius:8px; font-size:.8rem; font-weight:700; cursor:pointer;
+  }
+  .reveal-btn:hover{background:rgba(110,168,254,.12);}
+  .reveal-content{
+    display:none; margin-top:10px; padding:10px 12px; border-radius:8px;
+    background:rgba(126,232,184,.07); border-left:3px solid var(--good); font-size:.87rem; line-height:1.55;
+  }
+  .reveal-content.show{display:block;}
+
+  footer{text-align:center; color:var(--muted); font-size:.78rem; padding:20px; opacity:.7;}
+
+  .final-intro{text-align:center; padding:10px 0 4px;}
+  .final-intro p{color:var(--muted); font-size:.9rem;}
+  #finalStart{margin:10px auto 0; display:block;}
+  #finalArea{display:none;}
+
+  @media (max-width:600px){
+    header h1{font-size:1.2rem;}
+    .card{padding:14px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📘 Midterm Math Reviewer</h1>
+  <p>College Logic and Math — Reading Material 3</p>
+  <span class="examdate">🗓 Midterm Exam: Thursday, Sept. 24, 2026</span>
+</header>
+
+<div class="wrap">
+
+<nav id="tabs">
+  <button data-tab="t1" class="active">1. Math Phrases</button>
+  <button data-tab="t2">2. Polya's Method</button>
+  <button data-tab="t3">3. Integers</button>
+  <button data-tab="t4">4. PEMDAS</button>
+  <button data-tab="t5">5. Fractions & Decimals</button>
+  <button data-tab="t6">6. F-D-% Conversion</button>
+  <button data-tab="t7">7. Equity Ratios</button>
+  <button data-tab="t8">8. CAPEX/OPEX & Ethics</button>
+  <button data-tab="t9">🏁 Mock Exam</button>
+</nav>
+
+<!-- ===================== TOPIC 1: MATH PHRASES ===================== -->
+<section class="topic active" id="t1">
+  <div class="card">
+    <h2>Translating Phrases to Mathematical Expressions</h2>
+    <div class="sub">Mathematics is a language — words become numbers, variables, and operators.</div>
+
+    <h3>➕ Addition phrases</h3>
+    <p><code>plus</code> · <code>increased by</code> · <code>added to</code> · <code>more than</code> · <code>combined with</code> · <code>sum / total of</code></p>
+
+    <h3>➖ Subtraction phrases</h3>
+    <p><code>minus</code> · <code>decreased by</code> · <code>diminished by</code> · <code>reduced by</code> · <code>subtracted from</code> · <code>less than</code> · <code>the difference of</code> · <code>exceeded by</code></p>
+
+    <h3>✖️ Multiplication phrases</h3>
+    <p><code>times</code> · <code>multiplied by</code> · <code>product of</code> · <code>of</code> (e.g. "1/2 <b>of</b> a number")</p>
+
+    <h3>➗ Division phrases</h3>
+    <p><code>divided by</code> · <code>the quotient of</code> · <code>the ratio of</code> · <code>the fraction of</code> · <code>per</code></p>
+
+    <div class="example">
+      <b>⚠️ Watch out:</b> "greater than" is a <b>comparison symbol</b> (>), not an operation word — don't confuse it with "more than," which usually signals addition.
+    </div>
+
+    <h3>Worked translations</h3>
+    <div class="example"><b>"5 more than a number"</b> → <span class="math">x + 5</span></div>
+    <div class="example"><b>"a number decreased by 8"</b> → <span class="math">x − 8</span></div>
+    <div class="example"><b>"7 less than a number"</b> → <span class="math">x − 7</span> (order flips!)</div>
+    <div class="example"><b>"the product of a number and 6"</b> → <span class="math">6x</span></div>
+    <div class="example"><b>"the quotient of a number and 4"</b> → <span class="math">x ÷ 4</span></div>
+    <div class="example"><b>"twice a number diminished by 3"</b> → <span class="math">2x − 3</span></div>
+  </div>
+
+  <div class="card">
+    <h2>🔄 Flashcards — Flip to check</h2>
+    <div class="flash-grid" id="fc1"></div>
+  </div>
+
+  <div class="card">
+    <h2>✍️ Try It Yourself</h2>
+    <div class="sub">Translate each phrase on your own, then reveal the answer.</div>
+
+    <div class="try-box">
+      <div class="try-q">1. "8 increased by a number"</div>
+      <button class="reveal-btn">Show Answer</button>
+      <div class="reveal-content"><b>x + 8</b><br>"Increased by" → addition.</div>
+    </div>
+    <div class="try-box">
+      <div class="try-q">2. "A number diminished by 5"</div>
+      <button class="reveal-btn">Show Answer</button>
+      <div class="reveal-content"><b>x − 5</b><br>"Diminished by" → subtraction, number stays first.</div>
+    </div>
+    <div class="try-box">
+      <div class="try-q">3. "The sum of a number and 10, divided by 2"</div>
+      <button class="reveal-btn">Show Answer</button>
+      <div class="reveal-content"><b>(x + 10) ÷ 2</b><br>"Sum of" → addition happens first, then "divided by 2" wraps the whole sum.</div>
+    </div>
+    <div class="try-box">
+      <div class="try-q">4. "3 less than twice a number"</div>
+      <button class="reveal-btn">Show Answer</button>
+      <div class="reveal-content"><b>2x − 3</b><br>"Twice a number" = 2x. "3 less than" flips the order: 2x comes first, then −3.</div>
+    </div>
+    <div class="try-box">
+      <div class="try-q">5. "The ratio of a number to 9, increased by 4"</div>
+      <button class="reveal-btn">Show Answer</button>
+      <div class="reveal-content"><b>(x ÷ 9) + 4</b><br>"Ratio of...to" → division; "increased by" → add 4 afterward.</div>
+    </div>
+    <div class="btnrow">
+      <button class="primary" onclick="regenerate(1)">🎲 Generate New Problems</button>
+    </div>
+    <div id="gen-t1"></div>
+  </div>
+
+  <div class="card">
+    <h2>✅ Practice Quiz</h2>
+    <div class="quiz-box" id="quiz1"></div>
+  </div>
+</section>
+
+<!-- ===================== TOPIC 2: POLYA ===================== -->
+<section class="topic" id="t2">
+  <div class="card">
+    <h2>Polya's 4-Step Method of Problem Solving</h2>
+    <div class="sub">A universal framework for solving any word problem, math or business.</div>
+
+    <h3>Step 1 — Understand the Problem</h3>
+    <p>What is being asked? What are the given facts? Find the connection between what you know and what you need.</p>
+
+    <h3>Step 2 — Devise a Plan</h3>
+    <p>Write the <b>number sentence</b>. What operations must be performed? Choose a strategy: Guess & Check, Look for a Pattern, Draw a Picture, Use a Model, Work Backwards, Use a Formula, Solve an Equation, or Use Direct Reasoning.</p>
+
+    <h3>Step 3 — Carry Out the Plan</h3>
+    <p>Execute your plan step by step. Check that each step is correct before moving to the next.</p>
+
+    <h3>Step 4 — Look Back</h3>
+    <p>Verify your answer makes sense. Did you use all the given information? Is the answer labeled correctly (units, PhP, %, etc.)?</p>
+
+    <div class="example">
+      <b>Example:</b> Mount Everest is 29,028 ft above sea level; the Dead Sea is 1,312 ft above sea level. Find the difference.<br>
+      <b>1. Understand:</b> asked = difference in elevation.<br>
+      <b>2. Plan:</b> Difference = Highest − Lowest.<br>
+      <b>3. Solve:</b> 29,028 − 1,312 = <b>27,716 ft</b>.<br>
+      <b>4. Look back:</b> Both elevations are positive and Everest is clearly higher — answer is reasonable.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🔄 Flashcards</h2>
+    <div class="flash-grid" id="fc2"></div>
+  </div>
+
+  <div class="card">
+    <h2>✍️ Try It Yourself</h2>
+    <div class="sub">Work through each problem using all 4 steps, then reveal the full solution.</div>
+
+    <div class="try-box">
+      <div class="try-q">1. A vendor sold 45 items on Monday and 12 more items on Tuesday than Monday. How many total items were sold over both days?</div>
+      <button class="reveal-btn">Show Solution</button>
+      <div class="reveal-content">
+        <b>1. Understand:</b> asked = total items sold both days.<br>
+        <b>2. Plan:</b> Tuesday = Monday + 12; Total = Monday + Tuesday.<br>
+        <b>3. Solve:</b> Tuesday = 45 + 12 = 57. Total = 45 + 57 = <b>102 items</b>.<br>
+        <b>4. Look back:</b> 102 is reasonable since Tuesday alone is already more than half.
+      </div>
+    </div>
+    <div class="try-box">
+      <div class="try-q">2. A delivery van starts the day with a full tank. It uses 3/8 of the tank in the morning and 1/4 of the tank in the afternoon. What fraction of the tank is left?</div>
+      <button class="reveal-btn">Show Solution</button>
+      <div class="reveal-content">
+        <b>1. Understand:</b> asked = fraction of tank remaining.<br>
+        <b>2. Plan:</b> Remaining = 1 − (3/8 + 1/4).<br>
+        <b>3. Solve:</b> 1 − (3/8 + 2/8) = 1 − 5/8 = <b>3/8 of the tank</b>.<br>
+        <b>4. Look back:</b> 3/8 + 5/8 = 1 whole ✓.
+      </div>
+    </div>
+    <div class="try-box">
+      <div class="try-q">3. Room temperature was −2°C at dawn. It rose 9°C by noon, then dropped 6°C by evening. What is the evening temperature?</div>
+      <button class="reveal-btn">Show Solution</button>
+      <div class="reveal-content">
+        <b>1. Understand:</b> asked = final evening temperature.<br>
+        <b>2. Plan:</b> Final = −2 + 9 − 6.<br>
+        <b>3. Solve:</b> −2 + 9 = 7; 7 − 6 = <b>1°C</b>.<br>
+        <b>4. Look back:</b> Starting negative, rising more than it drops overall → a small positive result makes sense.
+      </div>
+    </div>
+    <div class="btnrow">
+      <button class="primary" onclick="regenerate(2)">🎲 Generate New Problems</button>
+    </div>
+    <div id="gen-t2"></div>
+  </div>
+
+  <div class="card">
+    <h2>✅ Practice Quiz</h2>
+    <div class="quiz-box" id="quiz2"></div>
+  </div>
+</section>
+
+<!-- ===================== TOPIC 3: INTEGERS ===================== -->
+<section class="topic" id="t3">
+  <div class="card">
+    <h2>Operations on Integers</h2>
+    <div class="sub">The number line, absolute value, and sign rules.</div>
+
+    <h3>Absolute Value</h3>
+    <p>The distance of a number from zero — always non-negative. Symbol: <code>| |</code>. Example: |−3| = 3.</p>
+
+    <h3>➕ Addition Rules</h3>
+    <table class="ref"><tr><th>Signs</th><th>Rule</th><th>Result Sign</th></tr>
+    <tr><td>Same signs</td><td>Add the numbers, keep the common sign</td><td>same as both</td></tr>
+    <tr><td>Different signs</td><td>Subtract (larger − smaller absolute value)</td><td>sign of the larger |value|</td></tr></table>
+
+    <h3>➖ Subtraction Rule — "Keep, Change, Change"</h3>
+    <ol>
+      <li>Keep the minuend (first number)</li>
+      <li>Change subtraction to addition</li>
+      <li>Change the sign of the subtrahend (second number)</li>
+      <li>Then apply the addition rules above</li>
+    </ol>
+    <div class="formula">3 − (−2) → 3 + (2) = 5</div>
+
+    <h3>✖️➗ Multiplication & Division Rules</h3>
+    <table class="ref"><tr><th>Signs</th><th>Result</th></tr>
+    <tr><td>Same signs (+×+ or −×−)</td><td>Positive</td></tr>
+    <tr><td>Different signs (+×− or −×+)</td><td>Negative</td></tr></table>
+
+    <h3>Exponents — quick reminders</h3>
+    <ul>
+      <li><span class="math">(−2)⁴ = 16</span> (the negative is inside the parenthesis, raised too)</li>
+      <li><span class="math">−2⁴ = −16</span> (only 2 is raised; the minus applies after)</li>
+      <li>Any number to the power 1 equals itself: <span class="math">6¹ = 6</span></li>
+      <li>Any (non-zero) number to the power 0 equals 1: <span class="math">5⁰ = 1</span></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>🔄 Flashcards</h2>
+    <div class="flash-grid" id="fc3"></div>
+  </div>
+
+  <div class="card">
+    <h2>✍️ Try It Yourself</h2>
+    <div class="sub">Solve each, then reveal the step-by-step answer.</div>
+
+    <div class="try-box">
+      <div class="try-q">1. −7 + 3 = ?</div>
+      <button class="reveal-btn">Show Answer</button>
+      <div class="reveal-content">Different signs → subtract: 7−3=4, keep sign of larger |value| (−7) → <b>−4</b></div>
+    </div>
+    <div class="try-box">
+      <div class="try-q">2. −5 − (−9) = ?</div>
+      <button class="reveal-btn">Show Answer</button>
+      <div class="reveal-content">Keep, Change, Change: −5 + 9 = <b>4</b></div>
+    </div>
+    <div class="try-box">
+      <div class="try-q">3. −6 × 8 = ?</div>
+      <button class="reveal-btn">Show Answer</button>
+      <div class="reveal-content">Different signs → negative: <b>−48</b></div>
+    </div>
+    <div class="try-box">
+      <div class="try-q">4. −36 ÷ (−4) = ?</div>
+      <button class="reveal-btn">Show Answer</button>
+      <div class="reveal-content">Same signs → positive: <b>9</b></div>
+    </div>
+    <div class="try-box">
+      <div class="try-q">5. (−3)³ = ?</div>
+      <button class="reveal-btn">Show Answer</button>
+      <div class="reveal-content">(−3)×(−3)×(−3) = 9×(−3) = <b>−27</b> (odd number of negatives → negative)</div>
+    </div>
+    <div class="btnrow">
+      <button class="primary" onclick="regenerate(3)">🎲 Generate New Problems</button>
+    </div>
+    <div id="gen-t3"></div>
+  </div>
+
+  <div class="card">
+    <h2>✅ Practice Quiz</h2>
+    <div class="quiz-box" id="quiz3"></div>
+  </div>
+</section>
+
+<!-- ===================== TOPIC 4: PEMDAS ===================== -->
+<section class="topic" id="t4">
+  <div class="card">
+    <h2>Order of Operations — PEMDAS</h2>
+    <div class="sub">Parenthesis → Exponents → Multiplication/Division (left to right) → Addition/Subtraction (left to right)</div>
+
+    <ol>
+      <li><b>P</b>arenthesis — solve inside grouping symbols first</li>
+      <li><b>E</b>xponents — simplify powers</li>
+      <li><b>M</b>ultiplication / <b>D</b>ivision — whichever comes first, left to right</li>
+      <li><b>A</b>ddition / <b>S</b>ubtraction — whichever comes first, left to right</li>
+    </ol>
+
+    <div class="example">
+      <b>Example:</b> <span class="math">2 + (4 − 5) × 3</span><br>
+      = 2 + (−1) × 3 &nbsp;(parenthesis)<br>
+      = 2 + (−3) &nbsp;(multiplication)<br>
+      = <b>−1</b> &nbsp;(addition)
+    </div>
+    <div class="example">
+      <b>Example:</b> <span class="math">−4 ÷ (2 + 2) × 5 − 3</span><br>
+      = −4 ÷ 4 × 5 − 3 &nbsp;(parenthesis)<br>
+      = −1 × 5 − 3 &nbsp;(division, left to right)<br>
+      = −5 − 3 = <b>−8</b>
+    </div>
+    <p><b>Remember:</b> multiplication doesn't always come before division — do them in the order they appear, left to right. Same for addition/subtraction.</p>
+  </div>
+
+  <div class="card">
+    <h2>🔄 Flashcards</h2>
+    <div class="flash-grid" id="fc4"></div>
+  </div>
+
+  <div class="card">
+    <h2>✍️ Try It Yourself</h2>
+    <div class="sub">Evaluate step by step following PEMDAS, then reveal the full solution.</div>
+
+    <div class="try-box">
+      <div class="try-q">1. 5 + 3 × (8 − 4)² ÷ 2 = ?</div>
+      <button class="reveal-btn">Show Solution</button>
+      <div class="reveal-content">
+        (8−4)=4 → 5+3×4²÷2 → 4²=16 → 5+3×16÷2 → 3×16=48 → 48÷2=24 → 5+24 = <b>29</b>
+      </div>
+    </div>
+    <div class="try-box">
+      <div class="try-q">2. (6 − 9)² + 12 ÷ (−3) = ?</div>
+      <button class="reveal-btn">Show Solution</button>
+      <div class="reveal-content">
+        (6−9)=−3 → (−3)²=9 → 12÷(−3)=−4 → 9+(−4) = <b>5</b>
+      </div>
+    </div>
+    <div class="try-box">
+      <div class="try-q">3. 10 − 2 × 3 + 4² ÷ 8 = ?</div>
+      <button class="reveal-btn">Show Solution</button>
+      <div class="reveal-content">
+        4²=16 → 16÷8=2 → 2×3=6 → 10−6+2 (left to right) → 4+2 = <b>6</b>
+      </div>
+    </div>
+    <div class="btnrow">
+      <button class="primary" onclick="regenerate(4)">🎲 Generate New Problems</button>
+    </div>
+    <div id="gen-t4"></div>
+  </div>
+
+  <div class="card">
+    <h2>✅ Practice Quiz</h2>
+    <div class="quiz-box" id="quiz4"></div>
+  </div>
+</section>
+
+<!-- ===================== TOPIC 5: FRACTIONS & DECIMALS ===================== -->
+<section class="topic" id="t5">
+  <div class="card">
+    <h2>Operations on Fractions and Decimals</h2>
+
+    <h3>Fraction types</h3>
+    <ul>
+      <li><b>Proper:</b> numerator &lt; denominator (3/4)</li>
+      <li><b>Improper:</b> numerator ≥ denominator (7/4)</li>
+      <li><b>Mixed number:</b> whole number + proper fraction (1 3/4)</li>
+    </ul>
+
+    <h3>Add / Subtract Fractions</h3>
+    <p><b>Similar (same denominator):</b> just add/subtract numerators, keep the denominator.</p>
+    <p><b>Dissimilar (different denominators):</b> find the LCD (Least Common Denominator), convert to equivalent fractions, then add/subtract numerators.</p>
+    <div class="formula">a/c ± b/c = (a ± b)/c &nbsp;&nbsp;|&nbsp;&nbsp; a/b + c/d = (ad + bc)/bd</div>
+
+    <h3>Multiply Fractions</h3>
+    <p>Multiply numerator × numerator, denominator × denominator. Cancel common factors first to simplify.</p>
+    <div class="formula">(a/b) × (c/d) = (a×c)/(b×d)</div>
+
+    <h3>Divide Fractions</h3>
+    <p>Keep the first fraction, flip (reciprocal) the second, then multiply.</p>
+    <div class="formula">(a/b) ÷ (c/d) = (a/b) × (d/c)</div>
+
+    <h3>Decimals — Add/Subtract</h3>
+    <p>Align the decimal points vertically. Add trailing zeros as placeholders, then add or subtract normally.</p>
+
+    <h3>Decimals — Multiply</h3>
+    <p>Multiply as whole numbers (ignore decimal points), then count the <b>total</b> decimal places in both factors and place the decimal point that many places from the right in the product.</p>
+    <div class="example">1.25 × 4.3 → 125 × 43 = 5375 → 3 total decimal places → <b>5.375</b></div>
+
+    <h3>Decimals — Divide</h3>
+    <p>Move the divisor's decimal point right until it's a whole number; move the dividend's decimal point the same number of places. Then divide normally.</p>
+    <div class="example">1.24 ÷ 0.2 → 12.4 ÷ 2 = <b>6.2</b></div>
+  </div>
+
+  <div class="card">
+    <h2>🔄 Flashcards</h2>
+    <div class="flash-grid" id="fc5"></div>
+  </div>
+
+  <div class="card">
+    <h2>✍️ Try It Yourself</h2>
+    <div class="sub">Compute each, then reveal the step-by-step answer.</div>
+
+    <div class="try-box">
+      <div class="try-q">1. 2/3 + 5/6 = ?</div>
+      <button class="reveal-btn">Show Answer</button>
+      <div class="reveal-content">LCD=6: 4/6 + 5/6 = 9/6 → simplify → <b>3/2 or 1 1/2</b></div>
+    </div>
+    <div class="try-box">
+      <div class="try-q">2. 7/8 − 1/4 = ?</div>
+      <button class="reveal-btn">Show Answer</button>
+      <div class="reveal-content">LCD=8: 7/8 − 2/8 = <b>5/8</b></div>
+    </div>
+    <div class="try-box">
+      <div class="try-q">3. 3.75 + 2.006 = ?</div>
+      <button class="reveal-btn">Show Answer</button>
+      <div class="reveal-content">Align decimals: 3.750 + 2.006 = <b>5.756</b></div>
+    </div>
+    <div class="try-box">
+      <div class="try-q">4. 0.6 × 1.5 = ?</div>
+      <button class="reveal-btn">Show Answer</button>
+      <div class="reveal-content">6×15=90 → 2 total decimal places → <b>0.90</b></div>
+    </div>
+    <div class="try-box">
+      <div class="try-q">5. 4.8 ÷ 1.2 = ?</div>
+      <button class="reveal-btn">Show Answer</button>
+      <div class="reveal-content">Move both decimals 1 place: 48 ÷ 12 = <b>4</b></div>
+    </div>
+    <div class="btnrow">
+      <button class="primary" onclick="regenerate(5)">🎲 Generate New Problems</button>
+    </div>
+    <div id="gen-t5"></div>
+  </div>
+
+  <div class="card">
+    <h2>✅ Practice Quiz</h2>
+    <div class="quiz-box" id="quiz5"></div>
+  </div>
+</section>
+
+<!-- ===================== TOPIC 6: CONVERSIONS ===================== -->
+<section class="topic" id="t6">
+  <div class="card">
+    <h2>Fraction – Decimal – Percent Conversion</h2>
+
+    <table class="ref">
+      <tr><th>Conversion</th><th>Rule</th></tr>
+      <tr><td>Fraction → Decimal</td><td>Numerator ÷ Denominator</td></tr>
+      <tr><td>Decimal → Percent</td><td>Decimal × 100 (move point 2 right, add %)</td></tr>
+      <tr><td>Percent → Decimal</td><td>Percent ÷ 100 (move point 2 left, drop %)</td></tr>
+      <tr><td>Decimal → Fraction</td><td>Put digits over a power of 10, then reduce</td></tr>
+      <tr><td>Percent → Fraction</td><td>Drop %, put over 100, then reduce</td></tr>
+    </table>
+
+    <h3>Common equivalencies</h3>
+    <table class="ref">
+      <tr><th>Fraction</th><th>Decimal</th><th>Percent</th></tr>
+      <tr><td>1/2</td><td>0.50</td><td>50%</td></tr>
+      <tr><td>3/8</td><td>0.375</td><td>37.5%</td></tr>
+      <tr><td>9/20</td><td>0.45</td><td>45%</td></tr>
+      <tr><td>5/8</td><td>0.625</td><td>62.5%</td></tr>
+      <tr><td>7/40</td><td>0.175</td><td>17.5%</td></tr>
+    </table>
+
+    <div class="example"><b>0.128 → fraction:</b> 128/1000 → divide by 8 → <b>16/125</b></div>
+    <div class="example"><b>45% → fraction:</b> 45/100 → divide by 5 → <b>9/20</b></div>
+  </div>
+
+  <div class="card">
+    <h2>🔄 Flashcards</h2>
+    <div class="flash-grid" id="fc6"></div>
+  </div>
+
+  <div class="card">
+    <h2>✍️ Try It Yourself</h2>
+    <div class="sub">Convert each, then reveal the answer.</div>
+
+    <div class="try-box">
+      <div class="try-q">1. Convert 5/16 to a decimal and a percent.</div>
+      <button class="reveal-btn">Show Answer</button>
+      <div class="reveal-content">5 ÷ 16 = <b>0.3125</b> → × 100 → <b>31.25%</b></div>
+    </div>
+    <div class="try-box">
+      <div class="try-q">2. Convert 0.85 to a fraction (simplified) and a percent.</div>
+      <button class="reveal-btn">Show Answer</button>
+      <div class="reveal-content">85/100 ÷ 5 = <b>17/20</b> → 0.85 × 100 = <b>85%</b></div>
+    </div>
+    <div class="try-box">
+      <div class="try-q">3. Convert 12.5% to a decimal and a fraction (simplified).</div>
+      <button class="reveal-btn">Show Answer</button>
+      <div class="reveal-content">12.5 ÷ 100 = <b>0.125</b> → 125/1000 ÷ 125 = <b>1/8</b></div>
+    </div>
+    <div class="btnrow">
+      <button class="primary" onclick="regenerate(6)">🎲 Generate New Problems</button>
+    </div>
+    <div id="gen-t6"></div>
+  </div>
+
+  <div class="card">
+    <h2>✅ Practice Quiz</h2>
+    <div class="quiz-box" id="quiz6"></div>
+  </div>
+</section>
+
+<!-- ===================== TOPIC 7: EQUITY ===================== -->
+<section class="topic" id="t7">
+  <div class="card">
+    <h2>Equity Ownership & Fractional Expense Ratios</h2>
+    <div class="sub">Applies fractions to business ownership, profit shares, and cost allocation.</div>
+
+    <h3>Key idea</h3>
+    <p>Equity ratios define ownership distribution among partners. <b>All partner shares always sum to 1 whole (100%).</b></p>
+
+    <h3>Formulas</h3>
+    <div class="formula">Partner C's Fraction = 1 − (Partner A's Fraction + Partner B's Fraction)</div>
+    <div class="formula">Partner's Cash Share = Total Net Profit × Partner's Equity Fraction</div>
+    <div class="formula">Department's Overhead Share = Total Overhead × (Department Space ÷ Total Space)</div>
+
+    <div class="example">
+      <b>Example:</b> Partner A holds 2/5, Partner B holds 1/3. Total profit = PhP 450,000. Find Partner C's cash share.<br>
+      C's Fraction = 1 − (2/5 + 1/3) = 1 − (6/15 + 5/15) = 1 − 11/15 = <b>4/15</b><br>
+      Cash Share = 450,000 × 4/15 = 30,000 × 4 = <b>PhP 120,000</b>
+    </div>
+    <div class="example">
+      <b>Example:</b> Total space = 500 m². Production = 250 m². Rent = PhP 100,000.<br>
+      Production's fraction = 250/500 = 1/2 → Rent = 100,000 × 1/2 = <b>PhP 50,000</b>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🔄 Flashcards</h2>
+    <div class="flash-grid" id="fc7"></div>
+  </div>
+
+  <div class="card">
+    <h2>✍️ Try It Yourself</h2>
+    <div class="sub">Solve using Polya's method, then reveal the full worked solution.</div>
+
+    <div class="try-box">
+      <div class="try-q">1. Partner A owns 3/10 of a firm, Partner B owns 2/5. If total net profit is PhP 300,000, what is Partner C's equity fraction and cash share?</div>
+      <button class="reveal-btn">Show Solution</button>
+      <div class="reveal-content">
+        C's Fraction = 1 − (3/10 + 2/5) = 1 − (3/10 + 4/10) = 1 − 7/10 = <b>3/10</b><br>
+        Cash Share = 300,000 × 3/10 = <b>PhP 90,000</b>
+      </div>
+    </div>
+    <div class="try-box">
+      <div class="try-q">2. An office of 600 m² is shared by three departments: HR uses 120 m², IT uses 180 m², and Operations uses the rest. Monthly rent is PhP 90,000. Find each department's fractional share and rent.</div>
+      <button class="reveal-btn">Show Solution</button>
+      <div class="reveal-content">
+        HR: 120/600 = 1/5 → Rent = 90,000×1/5 = <b>PhP 18,000</b><br>
+        IT: 180/600 = 3/10 → Rent = 90,000×3/10 = <b>PhP 27,000</b><br>
+        Operations: 600−120−180=300 → 300/600=1/2 → Rent = 90,000×1/2 = <b>PhP 45,000</b><br>
+        Check: 18,000+27,000+45,000 = 90,000 ✓
+      </div>
+    </div>
+    <div class="btnrow">
+      <button class="primary" onclick="regenerate(7)">🎲 Generate New Problems</button>
+    </div>
+    <div id="gen-t7"></div>
+  </div>
+
+  <div class="card">
+    <h2>✅ Practice Quiz</h2>
+    <div class="quiz-box" id="quiz7"></div>
+  </div>
+</section>
+
+<!-- ===================== TOPIC 8: CAPEX/OPEX & ETHICS ===================== -->
+<section class="topic" id="t8">
+  <div class="card">
+    <h2>CAPEX, OPEX & Financial Statement Ethics</h2>
+
+    <h3>Capital Expenditure (CAPEX)</h3>
+    <p>Funds used to acquire, upgrade, or maintain <b>long-term physical assets</b> (property, buildings, equipment, technology). <b>Capitalized</b> on the balance sheet, not expensed immediately — benefits extend beyond one tax year.</p>
+    <p><i>Examples:</i> buying a new warehouse, purchasing production machinery, building a data center, office buildout.</p>
+
+    <h3>Operating Expenses (OPEX)</h3>
+    <p><b>Day-to-day</b> costs of keeping the business running. Fully consumed within the current period and deducted immediately from revenue on the Income Statement.</p>
+    <p><i>Examples:</i> salaries, rent, utilities, SaaS subscriptions, advertising, office supplies.</p>
+
+    <h3>OPEX Sub-categories</h3>
+    <ul>
+      <li><b>COGS</b> (Cost of Goods Sold) — expenses directly tied to production (raw materials, direct labor).</li>
+      <li><b>SG&A</b> (Selling, General & Administration) — expenses to run the business overall (rent, marketing, admin salaries), regardless of production volume.</li>
+    </ul>
+
+    <h3>Financial Statement Ethics — 5 Core Principles</h3>
+    <ul>
+      <li><b>Integrity</b> — honest, no misrepresenting or omitting facts</li>
+      <li><b>Objectivity</b> — report based on evidence, free from bias or conflict of interest</li>
+      <li><b>Professional Competence & Due Care</b> — stay updated, avoid negligent errors</li>
+      <li><b>Confidentiality</b> — protect sensitive data, prevent insider trading/leaks</li>
+      <li><b>Professional Behavior</b> — comply with laws, avoid discrediting the profession</li>
+    </ul>
+
+    <h3>Ethical practice examples</h3>
+    <ul>
+      <li>Full disclosure of liabilities/lawsuits in footnotes</li>
+      <li>Accurate revenue recognition (only after delivery/service rendered)</li>
+      <li>Fair valuation of assets (updating inventory/investment values honestly)</li>
+      <li>Giving auditors unrestricted access to records</li>
+      <li>Whistleblower protection channels</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>🔄 Flashcards</h2>
+    <div class="flash-grid" id="fc8"></div>
+  </div>
+
+  <div class="card">
+    <h2>✍️ Try It Yourself</h2>
+    <div class="sub">Classify each item, then reveal the answer and reasoning.</div>
+
+    <div class="try-box">
+      <div class="try-q">1. A company builds a new data center to house its servers. CAPEX or OPEX?</div>
+      <button class="reveal-btn">Show Answer</button>
+      <div class="reveal-content"><b>CAPEX</b> — it's a long-term physical infrastructure investment, capitalized on the balance sheet.</div>
+    </div>
+    <div class="try-box">
+      <div class="try-q">2. Monthly payroll for the customer service team. CAPEX or OPEX (and which sub-category)?</div>
+      <button class="reveal-btn">Show Answer</button>
+      <div class="reveal-content"><b>OPEX — SG&A</b>. It's a recurring cost of running the business, not tied directly to production.</div>
+    </div>
+    <div class="try-box">
+      <div class="try-q">3. Raw materials purchased to manufacture a product. CAPEX or OPEX (and which sub-category)?</div>
+      <button class="reveal-btn">Show Answer</button>
+      <div class="reveal-content"><b>OPEX — COGS</b>. Directly tied to production of goods.</div>
+    </div>
+    <div class="try-box">
+      <div class="try-q">4. A company reports a pending lawsuit in the footnotes even though it hurts short-term profitability. Which ethics principle does this reflect?</div>
+      <button class="reveal-btn">Show Answer</button>
+      <div class="reveal-content"><b>Integrity / Full Disclosure of Liabilities</b> — choosing transparency over deception.</div>
+    </div>
+    <div class="btnrow">
+      <button class="primary" onclick="regenerate(8)">🎲 Generate New Problems</button>
+    </div>
+    <div id="gen-t8"></div>
+  </div>
+
+  <div class="card">
+    <h2>✅ Practice Quiz</h2>
+    <div class="quiz-box" id="quiz8"></div>
+  </div>
+</section>
+
+<!-- ===================== FINAL MOCK EXAM ===================== -->
+<section class="topic" id="t9">
+  <div class="card final-intro">
+    <h2>🏁 Full Mock Exam</h2>
+    <p>20 randomized questions pulled from all 8 topics — simulates the real midterm. Good luck!</p>
+    <button class="primary" id="finalStart">Start Mock Exam</button>
+  </div>
+  <div class="card" id="finalArea">
+    <div class="quiz-head">
+      <span class="score-pill" id="finalScorePill">Score: 0 / 0</span>
+    </div>
+    <div class="quiz-box" id="finalQuiz"></div>
+  </div>
+</section>
+
+</div>
+
+<footer>Made for your Thursday midterm — good luck! 🍀 Review each topic, flip the flashcards, then test yourself.</footer>
+
+<script>
+/* ============ TAB SWITCHING ============ */
+const tabBtns = document.querySelectorAll('#tabs button');
+const topics = document.querySelectorAll('section.topic');
+tabBtns.forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    tabBtns.forEach(b=>b.classList.remove('active'));
+    topics.forEach(t=>t.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+});
+
+/* ============ FLASHCARD DATA ============ */
+const flashData = {
+  fc1:[
+    ["plus / added to / increased by / more than / combined with / sum of","➕ Addition"],
+    ["minus / decreased by / diminished by / reduced by / subtracted from / less than","➖ Subtraction"],
+    ["times / multiplied by / product of / \"of\"","✖️ Multiplication"],
+    ["divided by / quotient of / ratio of / per","➗ Division"],
+    ["\"7 less than a number\"","x − 7 (order flips!)"],
+    ["\"greater than\"","⚠️ Comparison symbol (>), NOT an operation"],
+  ],
+  fc2:[
+    ["Step 1","Understand the Problem"],
+    ["Step 2","Devise a Plan"],
+    ["Step 3","Carry Out the Plan"],
+    ["Step 4","Look Back"],
+    ["Name 3 problem-solving strategies","Guess & Check, Draw a Picture, Work Backwards (also: pattern, model, formula, equation, direct reasoning)"],
+    ["Why 'Look Back'?","To verify the answer is correct, makes sense, and properly labeled"],
+  ],
+  fc3:[
+    ["|−7|","7 (absolute value = distance from 0)"],
+    ["Same signs + same signs (addition)","Add, keep the common sign"],
+    ["Different signs (addition)","Subtract, keep sign of larger |value|"],
+    ["Subtraction rule","Keep, Change, Change → then add"],
+    ["(−) × (−)","Positive"],
+    ["(+) × (−)","Negative"],
+    ["(−2)⁴","16 — the whole (−2) is raised"],
+    ["−2⁴","−16 — only 2 is raised, minus applies after"],
+    ["6⁰","1 (any nonzero number^0 = 1)"],
+  ],
+  fc4:[
+    ["PEMDAS stands for","Parenthesis, Exponents, Multiplication/Division, Addition/Subtraction"],
+    ["M and D order","Left to right — whichever comes first"],
+    ["A and S order","Left to right — whichever comes first"],
+    ["First step always","Simplify inside Parenthesis / grouping symbols"],
+    ["2 + (4−5)×3 = ?","−1"],
+  ],
+  fc5:[
+    ["Similar fractions","Same denominator — just add/subtract numerators"],
+    ["Dissimilar fractions","Different denominators — find LCD first"],
+    ["Multiply fractions","Numerator×numerator over denominator×denominator"],
+    ["Divide fractions","Keep, flip (reciprocal), multiply"],
+    ["Add/subtract decimals","Align the decimal points, pad zeros"],
+    ["Multiply decimals","Multiply as whole numbers, count total decimal places"],
+    ["Divide decimals","Move divisor's decimal to make it whole; move dividend's the same # of places"],
+  ],
+  fc6:[
+    ["Fraction → Decimal","Numerator ÷ Denominator"],
+    ["Decimal → Percent","× 100 (move point 2 right)"],
+    ["Percent → Decimal","÷ 100 (move point 2 left)"],
+    ["Decimal → Fraction","Over a power of 10, then reduce"],
+    ["Percent → Fraction","Over 100, then reduce"],
+    ["3/8 as a percent","37.5%"],
+  ],
+  fc7:[
+    ["Sum of all partner equity shares","Always equals 1 (100%)"],
+    ["Partner C's Fraction formula","1 − (A's Fraction + B's Fraction)"],
+    ["Cash Share formula","Total Net Profit × Equity Fraction"],
+    ["Department Overhead Share formula","Total Overhead × (Dept Space ÷ Total Space)"],
+  ],
+  fc8:[
+    ["CAPEX","Long-term asset spending; capitalized on balance sheet"],
+    ["OPEX","Day-to-day costs; expensed immediately on income statement"],
+    ["COGS","Costs directly tied to production (materials, direct labor)"],
+    ["SG&A","Costs to run the business overall (rent, marketing, admin)"],
+    ["5 Ethics Pillars","Integrity, Objectivity, Competence & Due Care, Confidentiality, Professional Behavior"],
+    ["Buying a new company warehouse","CAPEX"],
+    ["Monthly Slack/Zoom subscription","OPEX (SG&A)"],
+  ],
+};
+
+Object.keys(flashData).forEach(id=>{
+  const grid = document.getElementById(id);
+  flashData[id].forEach(([front,back])=>{
+    const card = document.createElement('div');
+    card.className='flash';
+    card.innerHTML = `<div class="flash-inner">
+      <div class="flash-face flash-front">${front}<span class="flash-hint">tap to flip</span></div>
+      <div class="flash-face flash-back">${back}<span class="flash-hint">tap to flip</span></div>
+    </div>`;
+    card.addEventListener('click', ()=>card.classList.toggle('flipped'));
+    grid.appendChild(card);
+  });
+});
+
+/* ============ TRY-IT-YOURSELF (reveal answer) ============ */
+function attachReveal(root){
+  root.querySelectorAll('.reveal-btn').forEach(btn=>{
+    if(btn.dataset.wired) return;
+    btn.dataset.wired = '1';
+    btn.addEventListener('click', ()=>{
+      const content = btn.nextElementSibling;
+      const showing = content.classList.toggle('show');
+      btn.textContent = showing ? 'Hide Answer' : 'Show Answer';
+    });
+  });
+}
+attachReveal(document);
+
+/* ============ RANDOM PROBLEM GENERATORS ============ */
+function randInt(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+function randNZ(min,max){ let v; do{ v = randInt(min,max); } while(v===0); return v; }
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function gcdNum(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){ [a,b]=[b,a%b]; } return a||1; }
+function lcmNum(a,b){ return Math.abs(a*b)/gcdNum(a,b); }
+function simplifyFrac(n,d){ if(d<0){ n=-n; d=-d; } const g=gcdNum(n,d); return [n/g, d/g]; }
+function randomDivisor(n, min, max){
+  const cands=[];
+  for(let d=min; d<=max; d++){ if(n % d === 0) cands.push(d); }
+  return cands.length ? pick(cands) : 1;
+}
+
+function renderTryBoxes(containerId, problems){
+  const c = document.getElementById(containerId);
+  c.innerHTML = '';
+  problems.forEach(p=>{
+    const div = document.createElement('div');
+    div.className = 'try-box';
+    div.innerHTML = `<div class="try-q">${p.q}</div>
+      <button class="reveal-btn">Show Answer</button>
+      <div class="reveal-content">${p.a}</div>`;
+    c.appendChild(div);
+  });
+  attachReveal(c);
+}
+
+function genPhrases(n){
+  const out=[];
+  for(let i=0;i<n;i++){
+    const a=randInt(2,15), b=randInt(2,15);
+    const templates=[
+      ()=>({q:`"${a} increased by a number"`, a:`<b>x + ${a}</b> — "increased by" → addition.`}),
+      ()=>({q:`"A number decreased by ${a}"`, a:`<b>x − ${a}</b> — "decreased by" → subtraction, number stays first.`}),
+      ()=>({q:`"${a} less than a number"`, a:`<b>x − ${a}</b> — "less than" flips the order.`}),
+      ()=>({q:`"The product of a number and ${a}"`, a:`<b>${a}x</b> — "product of" → multiplication.`}),
+      ()=>({q:`"The quotient of a number and ${a}"`, a:`<b>x ÷ ${a}</b> — "quotient of" → division, number first.`}),
+      ()=>({q:`"${b} more than ${a} times a number"`, a:`<b>${a}x + ${b}</b>`}),
+      ()=>({q:`"${b} less than ${a} times a number"`, a:`<b>${a}x − ${b}</b>`}),
+      ()=>({q:`"The sum of a number and ${a}, divided by ${b}"`, a:`<b>(x + ${a}) ÷ ${b}</b>`}),
+      ()=>({q:`"${a} diminished by a number"`, a:`<b>${a} − x</b> — the number is subtracted from ${a}.`}),
+      ()=>({q:`"${b} times a number, reduced by ${a}"`, a:`<b>${b}x − ${a}</b>`}),
+    ];
+    out.push(pick(templates)());
+  }
+  return out;
+}
+
+function genPolya(n){
+  const out=[];
+  for(let i=0;i<n;i++){
+    const type = randInt(1,3);
+    if(type===1){
+      const m=randInt(20,80), add=randInt(5,25), t=m+add, total=m+t;
+      out.push({q:`A vendor sold ${m} items on Monday and ${add} more items on Tuesday than Monday. How many total items were sold over both days?`,
+        a:`<b>1. Understand:</b> asked = total items sold.<br><b>2. Plan:</b> Tuesday = Monday + ${add}; Total = Monday + Tuesday.<br><b>3. Solve:</b> Tuesday = ${m}+${add}=${t}. Total = ${m}+${t} = <b>${total} items</b>.<br><b>4. Look back:</b> Tuesday (${t}) is more than Monday (${m}), so the total is reasonable.`});
+    } else if(type===2){
+      const start=randInt(-10,5), rise=randInt(4,15), drop=randInt(2,12), mid=start+rise, final=mid-drop;
+      out.push({q:`Room temperature was ${start}°C at dawn. It rose ${rise}°C by noon, then dropped ${drop}°C by evening. What is the evening temperature?`,
+        a:`<b>1. Understand:</b> asked = final evening temperature.<br><b>2. Plan:</b> Final = ${start} + ${rise} − ${drop}.<br><b>3. Solve:</b> ${start}+${rise}=${mid}; ${mid}−${drop}=<b>${final}°C</b>.<br><b>4. Look back:</b> Retrace the changes on a number line to confirm.`});
+    } else {
+      const cost=randInt(50,400), qty=randInt(2,8), spent=cost*qty, paid=spent+randInt(50,500), change=paid-spent;
+      out.push({q:`Ana bought ${qty} notebooks that cost PhP ${cost} each. How much change will she receive if she paid PhP ${paid}?`,
+        a:`<b>1. Understand:</b> asked = amount of change.<br><b>2. Plan:</b> Change = Paid − (Cost × Qty).<br><b>3. Solve:</b> ${cost}×${qty}=${spent}; ${paid}−${spent} = <b>PhP ${change}</b>.<br><b>4. Look back:</b> ${spent} spent is less than ${paid} paid, so a positive change makes sense.`});
+    }
+  }
+  return out;
+}
+
+function genIntegers(n){
+  const out=[];
+  for(let i=0;i<n;i++){
+    const type=randInt(1,5);
+    if(type===1){
+      const a=randInt(-15,15), b=randInt(-15,15), ans=a+b;
+      out.push({q:`${a} + (${b}) = ?`, a:`<b>${ans}</b>`});
+    } else if(type===2){
+      const a=randInt(-15,15), b=randInt(-15,15), ans=a-b;
+      out.push({q:`${a} − (${b}) = ?`, a:`Keep-Change-Change: ${a} + (${-b}) = <b>${ans}</b>`});
+    } else if(type===3){
+      const a=randNZ(-12,12), b=randNZ(-12,12), ans=a*b;
+      out.push({q:`${a} × (${b}) = ?`, a:`${(a<0)!==(b<0)?'Different signs → negative':'Same signs → positive'}: <b>${ans}</b>`});
+    } else if(type===4){
+      const b=randNZ(-12,12), ansT=randNZ(-10,10), a=b*ansT;
+      out.push({q:`${a} ÷ (${b}) = ?`, a:`${(a<0)!==(b<0)?'Different signs → negative':'Same signs → positive'}: <b>${ansT}</b>`});
+    } else {
+      const base=randNZ(-5,5), exp=randInt(2,3), ans=Math.pow(base,exp);
+      out.push({q:`(${base})^${exp} = ?`, a:`<b>${ans}</b> ${exp%2===0?'(even exponent → positive)':'(odd exponent → keeps base sign)'}`});
+    }
+  }
+  return out;
+}
+
+function genPemdas(n){
+  const out=[];
+  for(let i=0;i<n;i++){
+    const type=randInt(1,3);
+    if(type===1){
+      const s1=randInt(2,6), D=randInt(1,4), C=D+s1, s2=s1*s1, B=randInt(1,6), s3=B*s2;
+      const E=randomDivisor(s3,2,6), s4=s3/E, A=randInt(1,10), final=A+s4;
+      out.push({q:`${A} + ${B} × (${C} − ${D})² ÷ ${E} = ?`,
+        a:`(${C}−${D})=${s1} → ${s1}²=${s2} → ${B}×${s2}=${s3} → ${s3}÷${E}=${s4} → ${A}+${s4} = <b>${final}</b>`});
+    } else if(type===2){
+      const A=randInt(2,10), B=randInt(1,8), p=A-B, p2=p*p, D=pick([2,4,5,10]), C=D*randInt(1,6), q=C/D, final=p2+q;
+      out.push({q:`(${A} − ${B})² + ${C} ÷ ${D} = ?`,
+        a:`(${A}−${B})=${p} → ${p}²=${p2} → ${C}÷${D}=${q} → ${p2}+${q} = <b>${final}</b>`});
+    } else {
+      const D=pick([2,3,4]), d2=D*D, E=randomDivisor(d2,2,5), div=d2/E, B=randInt(1,6), C=randInt(1,6), mul=B*C, A=randInt(10,25), final=A-mul+div;
+      out.push({q:`${A} − ${B} × ${C} + ${D}² ÷ ${E} = ?`,
+        a:`${D}²=${d2} → ${d2}÷${E}=${div} → ${B}×${C}=${mul} → ${A}−${mul}+${div} (left to right) = <b>${final}</b>`});
+    }
+  }
+  return out;
+}
+
+function genFracDec(n){
+  const out=[];
+  const dens=[2,3,4,5,6,8];
+  for(let i=0;i<n;i++){
+    const kind=randInt(1,6);
+    if(kind===1){
+      const d1=pick(dens), d2=pick(dens), n1=randInt(1,d1-1), n2=randInt(1,d2-1);
+      const lcd=lcmNum(d1,d2), A=n1*(lcd/d1), B=n2*(lcd/d2), num=A+B, [sn,sd]=simplifyFrac(num,lcd);
+      out.push({q:`${n1}/${d1} + ${n2}/${d2} = ?`, a:`LCD=${lcd}: ${A}/${lcd} + ${B}/${lcd} = ${num}/${lcd} → <b>${sn}/${sd}</b>`});
+    } else if(kind===2){
+      let d1=pick(dens), d2=pick(dens), n1=randInt(1,d1-1), n2=randInt(1,d2-1);
+      const lcd=lcmNum(d1,d2);
+      let A=n1*(lcd/d1), B=n2*(lcd/d2);
+      if(A<B){ [A,B]=[B,A]; [n1,n2]=[n2,n1]; [d1,d2]=[d2,d1]; }
+      const num=A-B, [sn,sd]=simplifyFrac(num,lcd);
+      out.push({q:`${n1}/${d1} − ${n2}/${d2} = ?`, a:`LCD=${lcd}: ${A}/${lcd} − ${B}/${lcd} = ${num}/${lcd} → <b>${sn}/${sd}</b>`});
+    } else if(kind===3){
+      const n1=randInt(1,9), d1=randInt(2,10), n2=randInt(1,9), d2=randInt(2,10);
+      const num=n1*n2, den=d1*d2, [sn,sd]=simplifyFrac(num,den);
+      out.push({q:`${n1}/${d1} × ${n2}/${d2} = ?`, a:`${n1}×${n2}=${num}, ${d1}×${d2}=${den} → <b>${sn}/${sd}</b>`});
+    } else if(kind===4){
+      const n1=randInt(1,9), d1=randInt(2,10), n2=randInt(1,9), d2=randInt(2,10);
+      const num=n1*d2, den=d1*n2, [sn,sd]=simplifyFrac(num,den);
+      out.push({q:`${n1}/${d1} ÷ ${n2}/${d2} = ?`, a:`Flip & multiply: ${n1}/${d1} × ${d2}/${n2} = ${num}/${den} → <b>${sn}/${sd}</b>`});
+    } else if(kind===5){
+      const a=(randInt(100,999)/100).toFixed(2), b=(randInt(10,999)/1000).toFixed(3), op=pick(['+','−']);
+      const av=parseFloat(a), bv=parseFloat(b), res=op==='+'?(av+bv):(av-bv);
+      out.push({q:`${a} ${op} ${b} = ?`, a:`Align the decimal points, then ${op==='+'?'add':'subtract'}: <b>${res.toFixed(3)}</b>`});
+    } else {
+      const a=(randInt(10,99)/10).toFixed(1), b=(randInt(10,99)/10).toFixed(1), op=pick(['×','÷']);
+      const av=parseFloat(a), bv=parseFloat(b), res=op==='×'?(av*bv):(av/bv);
+      out.push({q:`${a} ${op} ${b} = ?`, a:`<b>${Math.round(res*1000)/1000}</b>`});
+    }
+  }
+  return out;
+}
+
+function genConversion(n){
+  const out=[];
+  const dens=[2,4,5,8,10,16,20,25,40,50];
+  for(let i=0;i<n;i++){
+    const type=randInt(1,3), d=pick(dens), nnum=randInt(1,d-1), dec=nnum/d, pct=dec*100;
+    if(type===1){
+      out.push({q:`Convert ${nnum}/${d} to a decimal and a percent.`, a:`${nnum} ÷ ${d} = <b>${dec}</b> → × 100 → <b>${pct}%</b>`});
+    } else if(type===2){
+      const [sn,sd]=simplifyFrac(nnum,d);
+      out.push({q:`Convert ${dec} to a fraction (simplified) and a percent.`, a:`${dec} = <b>${sn}/${sd}</b> → × 100 → <b>${pct}%</b>`});
+    } else {
+      const [sn,sd]=simplifyFrac(nnum,d);
+      out.push({q:`Convert ${pct}% to a decimal and a fraction (simplified).`, a:`${pct} ÷ 100 = <b>${dec}</b> → <b>${sn}/${sd}</b>`});
+    }
+  }
+  return out;
+}
+
+function genEquity(n){
+  const out=[];
+  for(let i=0;i<n;i++){
+    const type=randInt(1,2);
+    if(type===1){
+      const d1=pick([3,4,5,6,8,10]), d2=pick([3,4,5,6,8,10]);
+      let n1=randInt(1,Math.max(1,Math.floor(d1/2)-1)), n2=randInt(1,Math.max(1,Math.floor(d2/3)-1));
+      const lcd=lcmNum(d1,d2);
+      let A=n1*(lcd/d1), B=n2*(lcd/d2);
+      if(A+B>=lcd){ n2=1; B=n2*(lcd/d2); }
+      const Cnum=lcd-(A+B), [csn,csd]=simplifyFrac(Cnum,lcd);
+      const profit=pick([100000,150000,200000,250000,300000,450000,500000]);
+      const cash=Math.round(profit*(csn/csd));
+      out.push({q:`Partner A owns ${n1}/${d1} of a firm, Partner B owns ${n2}/${d2}. If total net profit is PhP ${profit.toLocaleString()}, what is Partner C's equity fraction and cash share?`,
+        a:`C's Fraction = 1 − (${n1}/${d1}+${n2}/${d2}) = 1 − (${A}/${lcd}+${B}/${lcd}) = ${Cnum}/${lcd} → <b>${csn}/${csd}</b><br>Cash Share = ${profit.toLocaleString()} × ${csn}/${csd} = <b>PhP ${cash.toLocaleString()}</b>`});
+    } else {
+      const total=pick([300,400,500,600,800,1000]);
+      let dep1=Math.round(total*pick([0.1,0.15,0.2,0.25])/5)*5;
+      let dep2=Math.round(total*pick([0.1,0.15,0.2])/5)*5;
+      if(dep1+dep2>=total) dep2=Math.max(5, Math.floor((total-dep1)/3));
+      const dep3=total-dep1-dep2;
+      const rent=pick([50000,60000,80000,90000,100000,120000]);
+      const [f1n,f1d]=simplifyFrac(dep1,total), [f2n,f2d]=simplifyFrac(dep2,total), [f3n,f3d]=simplifyFrac(dep3,total);
+      const r1=Math.round(rent*dep1/total), r2=Math.round(rent*dep2/total), r3=rent-r1-r2;
+      out.push({q:`An office of ${total} m² is shared by three departments: Dept X uses ${dep1} m², Dept Y uses ${dep2} m², and Dept Z uses the rest. Monthly rent is PhP ${rent.toLocaleString()}. Find each department's fractional share and rent.`,
+        a:`X: ${dep1}/${total}=${f1n}/${f1d} → Rent=<b>PhP ${r1.toLocaleString()}</b><br>Y: ${dep2}/${total}=${f2n}/${f2d} → Rent=<b>PhP ${r2.toLocaleString()}</b><br>Z: ${dep3}/${total}=${f3n}/${f3d} → Rent=<b>PhP ${r3.toLocaleString()}</b><br>Check: sums to PhP ${rent.toLocaleString()} ✓`});
+    }
+  }
+  return out;
+}
+
+const capexOpexPool=[
+  {q:"Purchasing a new company warehouse.", a:"<b>CAPEX</b> — long-term physical asset, capitalized on the balance sheet."},
+  {q:"Monthly SaaS subscription (e.g., Slack, Zoom).", a:"<b>OPEX — SG&A</b> — recurring cost to run the business."},
+  {q:"Buying assembly-line robots for a factory.", a:"<b>CAPEX</b> — long-term production equipment."},
+  {q:"Sales commissions paid to sales staff.", a:"<b>OPEX — SG&A</b> — compensation tied to running the business."},
+  {q:"Raw materials used to manufacture a product.", a:"<b>OPEX — COGS</b> — directly tied to production."},
+  {q:"Installing a new roof on a corporate building.", a:"<b>CAPEX</b> — extends the building's useful life."},
+  {q:"Monthly electricity bill for the office.", a:"<b>OPEX</b> — day-to-day recurring cost."},
+  {q:"Legal fees paid to external auditors.", a:"<b>OPEX — SG&A</b> — professional service cost to run the business."},
+  {q:"Purchasing enterprise servers for company-wide use.", a:"<b>CAPEX</b> — long-term IT infrastructure."},
+  {q:"Direct factory labor to assemble products.", a:"<b>OPEX — COGS</b> — directly tied to production."},
+  {q:"Office supplies like paper and pens.", a:"<b>OPEX — SG&A</b> — everyday consumable cost."},
+  {q:"Building out a new retail storefront.", a:"<b>CAPEX</b> — new physical facility development."},
+  {q:"Advertising campaign on social media.", a:"<b>OPEX — SG&A</b> — marketing/customer acquisition cost."},
+  {q:"A whistleblower reporting channel is created for staff to flag fraud anonymously.", a:"This reflects the <b>Whistleblower Protection</b> ethics principle."},
+  {q:"A company discloses an ongoing lawsuit in its financial footnotes even though it hurts short-term profit.", a:"This reflects <b>Integrity / Full Disclosure of Liabilities</b>."},
+  {q:"Auditors are given complete, unrestricted access to accounting ledgers.", a:"This reflects <b>Independent Auditing Access</b>."},
+];
+function genCapexOpex(n){
+  const shuffled = capexOpexPool.slice().sort(()=>Math.random()-0.5);
+  return shuffled.slice(0,n);
+}
+
+function regenerate(topic){
+  const map={
+    1: ()=>renderTryBoxes('gen-t1', genPhrases(4)),
+    2: ()=>renderTryBoxes('gen-t2', genPolya(2)),
+    3: ()=>renderTryBoxes('gen-t3', genIntegers(5)),
+    4: ()=>renderTryBoxes('gen-t4', genPemdas(3)),
+    5: ()=>renderTryBoxes('gen-t5', genFracDec(5)),
+    6: ()=>renderTryBoxes('gen-t6', genConversion(4)),
+    7: ()=>renderTryBoxes('gen-t7', genEquity(2)),
+    8: ()=>renderTryBoxes('gen-t8', genCapexOpex(4)),
+  };
+  if(map[topic]) map[topic]();
+}
+
+/* ============ QUIZ DATA ============ */
+const quizData = {
+  quiz1:[
+    {q:"\"A number increased by 9\" translates to:", opts:["x − 9","x + 9","9x","x ÷ 9"], correct:1, exp:"'Increased by' signals addition."},
+    {q:"\"7 less than a number\" translates to:", opts:["7 − x","x − 7","x + 7","7x"], correct:1, exp:"'Less than' flips the order: the number comes first, minus 7."},
+    {q:"\"The product of a number and 5\" translates to:", opts:["x + 5","x − 5","5x","x ÷ 5"], correct:2, exp:"'Product of' means multiplication."},
+    {q:"\"The quotient of a number and 3\" translates to:", opts:["3x","x − 3","x ÷ 3","3 ÷ x"], correct:2, exp:"'Quotient of' means division, number first."},
+    {q:"Which phrase is a COMPARISON, not an operation word?", opts:["combined with","greater than","diminished by","times"], correct:1, exp:"'Greater than' signals the inequality symbol >, not an arithmetic operation."},
+  ],
+  quiz2:[
+    {q:"Which is the correct order of Polya's 4 steps?", opts:["Plan, Understand, Solve, Look back","Understand, Devise a Plan, Carry out the Plan, Look back","Solve, Understand, Plan, Check","Look back, Plan, Solve, Understand"], correct:1, exp:"Understand → Plan → Carry Out → Look Back."},
+    {q:"Writing the 'number sentence' belongs to which step?", opts:["Understand the Problem","Devise a Plan","Carry Out the Plan","Look Back"], correct:1, exp:"The number sentence/equation is part of devising a plan."},
+    {q:"Checking if your answer makes sense and is labeled correctly happens in:", opts:["Step 1","Step 2","Step 3","Step 4"], correct:3, exp:"Step 4, Look Back, is for verification."},
+    {q:"Which is NOT one of Polya's suggested strategies?", opts:["Draw a Picture","Guess and Check","Ignore the given data","Work Backwards"], correct:2, exp:"You should always use the given data — never ignore it."},
+  ],
+  quiz3:[
+    {q:"−2 + (−4) = ?", opts:["6","−6","2","−2"], correct:1, exp:"Same signs: add and keep the sign → −6."},
+    {q:"4 + (−6) = ?", opts:["10","−10","−2","2"], correct:2, exp:"Different signs: subtract (6−4=2), keep sign of larger |value| (−6) → −2."},
+    {q:"3 − (−2) = ?", opts:["1","5","−5","−1"], correct:1, exp:"Keep-Change-Change: 3 + 2 = 5."},
+    {q:"−3 × (−2) = ?", opts:["−6","6","−5","5"], correct:1, exp:"Same signs in multiplication → positive: 6."},
+    {q:"8 ÷ (−4) = ?", opts:["2","−2","4","−4"], correct:1, exp:"Different signs → negative: −2."},
+    {q:"(−2)⁴ = ?", opts:["−16","16","−8","8"], correct:1, exp:"(−2)×(−2)×(−2)×(−2) = 16 (even number of negatives → positive)."},
+    {q:"5⁰ = ?", opts:["0","5","1","undefined"], correct:2, exp:"Any nonzero number to the power 0 equals 1."},
+  ],
+  quiz4:[
+    {q:"2 + (4 − 5) × 3 = ?", opts:["−1","5","1","−5"], correct:0, exp:"(4−5)=−1 → 2+(−1×3) = 2−3 = −1."},
+    {q:"In PEMDAS, which is done first?", opts:["Addition","Exponents","Parenthesis","Division"], correct:2, exp:"Grouping symbols (Parenthesis) are always simplified first."},
+    {q:"−4 ÷ (2+2) × 5 − 3 = ?", opts:["−8","8","−17","17"], correct:0, exp:"−4÷4=−1 → −1×5=−5 → −5−3=−8."},
+    {q:"True or False: Multiplication is always performed before Division.", opts:["True","False"], correct:1, exp:"False — M and D are done left to right, whichever comes first."},
+    {q:"3² + 4 × 2 = ?", opts:["17","22","14","20"], correct:0, exp:"9 + 8 = 17 (exponent first, then multiplication, then addition)."},
+  ],
+  quiz5:[
+    {q:"3/4 + 6/4 = ?", opts:["9/8","9/4","3/2 (9/4 simplified? check)","2 1/4"], correct:1, exp:"Same denominator: add numerators → 9/4 (equivalent to 2 1/4, but as an improper fraction it's 9/4)."},
+    {q:"5/3 + 1/2 = ? (find LCD first)", opts:["6/5","13/6","6/6","10/6"], correct:1, exp:"LCD=6: 10/6 + 3/6 = 13/6."},
+    {q:"(2/5) × (3/7) = ?", opts:["6/35","5/12","6/12","2/7"], correct:0, exp:"Multiply straight across: 2×3=6, 5×7=35."},
+    {q:"(2/7) ÷ (3/14) = ?", opts:["3/49","4/3","6/98","2/3"], correct:1, exp:"Flip and multiply: 2/7 × 14/3 = 28/21 = 4/3."},
+    {q:"1.25 × 4.3 = ?", opts:["5.375","53.75","0.5375","5.4"], correct:0, exp:"125×43=5375, 3 total decimal places → 5.375."},
+    {q:"1.24 ÷ 0.2 = ?", opts:["0.62","62","6.2","0.062"], correct:2, exp:"Move both decimals 1 place: 12.4÷2 = 6.2."},
+  ],
+  quiz6:[
+    {q:"Convert 3/8 to a decimal.", opts:["0.375","0.38","3.8","0.25"], correct:0, exp:"3 ÷ 8 = 0.375."},
+    {q:"Convert 0.45 to a percent.", opts:["0.45%","4.5%","45%","450%"], correct:2, exp:"Multiply by 100: 0.45 × 100 = 45%."},
+    {q:"Convert 60% to a decimal.", opts:["6.0","0.6","0.06","60.0"], correct:1, exp:"60 ÷ 100 = 0.6."},
+    {q:"Convert 0.3 to a fraction (simplified).", opts:["3/100","3/10","30/1","1/3"], correct:1, exp:"0.3 = 3/10 (already simplest form)."},
+    {q:"Convert 45% to a fraction (simplified).", opts:["45/100","9/20","4.5/10","9/10"], correct:1, exp:"45/100 ÷ 5 = 9/20."},
+  ],
+  quiz7:[
+    {q:"Partner A owns 1/2, Partner B owns 1/4. What fraction does Partner C own?", opts:["1/4","1/2","3/4","1"], correct:0, exp:"1 − (1/2+1/4) = 1 − 3/4 = 1/4."},
+    {q:"Using the same partners above, if total profit is PhP 200,000, what is Partner C's cash share?", opts:["PhP 50,000","PhP 100,000","PhP 25,000","PhP 150,000"], correct:0, exp:"200,000 × 1/4 = PhP 50,000."},
+    {q:"A department uses 100 m² of a 400 m² office. Rent is PhP 80,000. What is that department's rent share?", opts:["PhP 10,000","PhP 20,000","PhP 40,000","PhP 80,000"], correct:1, exp:"Fraction=100/400=1/4; Rent=80,000×1/4=PhP 20,000."},
+    {q:"What must all partner equity fractions always sum to?", opts:["0","1 (100%)","Depends on the business","50%"], correct:1, exp:"Total ownership always equals 1 whole (100%)."},
+  ],
+  quiz8:[
+    {q:"Buying a new company delivery truck is classified as:", opts:["OPEX","CAPEX","COGS only","Neither"], correct:1, exp:"Vehicles are long-term physical assets → CAPEX."},
+    {q:"Monthly office electricity bill is classified as:", opts:["CAPEX","OPEX","Neither","Revenue"], correct:1, exp:"Recurring day-to-day cost → OPEX."},
+    {q:"Direct factory labor to manufacture a product falls under:", opts:["SG&A","COGS","CAPEX","None of these"], correct:1, exp:"COGS = costs directly tied to production."},
+    {q:"Corporate marketing salaries (not tied to a specific product) fall under:", opts:["COGS","SG&A","CAPEX","Neither"], correct:1, exp:"General running-the-business costs → SG&A."},
+    {q:"Recording sales only after the service is fully delivered demonstrates which ethical principle?", opts:["Confidentiality","Accurate Revenue Recognition (Integrity/Objectivity)","Professional Behavior only","None"], correct:1, exp:"This reflects honest, evidence-based reporting — integrity & objectivity in action."},
+    {q:"Setting up anonymous channels for staff to report fraud demonstrates:", opts:["Whistleblower Protection","Confidentiality violation","CAPEX policy","COGS reduction"], correct:0, exp:"This is an example of ethical whistleblower protection."},
+  ],
+};
+
+/* ============ GENERATE NEW QUIZ (shuffle questions + options) ============ */
+function shuffleArr(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+function freshQuizVersion(questions){
+  // Reorders the questions and, within each question, reshuffles the
+  // answer options (re-mapping the correct index), so it plays like a
+  // brand-new quiz drawn from the same topic's question bank.
+  const reordered = shuffleArr(questions);
+  return reordered.map(item=>{
+    const optOrder = shuffleArr(item.opts.map((_,i)=>i));
+    return {
+      q: item.q,
+      opts: optOrder.map(i=>item.opts[i]),
+      correct: optOrder.indexOf(item.correct),
+      exp: item.exp
+    };
+  });
+}
+
+/* ============ QUIZ RENDERER ============ */
+function renderQuiz(containerId, questions, isFinal=false, onDone=null){
+  const box = document.getElementById(containerId);
+  box.innerHTML = '';
+
+  const head = document.createElement('div');
+  head.className='quiz-head';
+  const pill = document.createElement('span');
+  pill.className='score-pill';
+  pill.textContent = `Score: 0 / ${questions.length}`;
+  head.appendChild(pill);
+  if(!isFinal) box.appendChild(head);
+
+  let score = 0;
+  let answered = 0;
+
+  questions.forEach((item, qi)=>{
+    const qDiv = document.createElement('div');
+    qDiv.className='q';
+    const p = document.createElement('div');
+    p.className='q-prompt';
+    p.textContent = `${qi+1}. ${item.q}`;
+    qDiv.appendChild(p);
+
+    item.opts.forEach((optText, oi)=>{
+      const b = document.createElement('button');
+      b.className='opt';
+      b.textContent = optText;
+      b.addEventListener('click', ()=>{
+        if(b.dataset.locked) return;
+        Array.from(qDiv.querySelectorAll('.opt')).forEach(o=>o.dataset.locked='1');
+        if(oi === item.correct){
+          b.classList.add('correct');
+          score++;
+        } else {
+          b.classList.add('wrong');
+          qDiv.querySelectorAll('.opt')[item.correct].classList.add('correct');
+        }
+        const ex = qDiv.querySelector('.explain');
+        ex.classList.add('show');
+        answered++;
+        pill.textContent = `Score: ${score} / ${questions.length}`;
+        if(isFinal){
+          document.getElementById('finalScorePill').textContent = `Score: ${score} / ${questions.length}`;
+        }
+        if(answered === questions.length && onDone) onDone(score);
+      });
+      qDiv.appendChild(b);
+    });
+
+    const explain = document.createElement('div');
+    explain.className='explain';
+    explain.textContent = '💡 ' + item.exp;
+    qDiv.appendChild(explain);
+
+    box.appendChild(qDiv);
+  });
+
+  if(!isFinal){
+    const banner = document.createElement('div');
+    banner.className='result-banner';
+    box.appendChild(banner);
+
+    const btnrow = document.createElement('div');
+    btnrow.className='btnrow';
+    const retry = document.createElement('button');
+    retry.className='ghost';
+    retry.textContent='🔁 Retry Quiz';
+    retry.addEventListener('click', ()=>renderQuiz(containerId, questions));
+    btnrow.appendChild(retry);
+
+    const newQuiz = document.createElement('button');
+    newQuiz.className='primary';
+    newQuiz.textContent='🆕 Generate New Quiz';
+    newQuiz.addEventListener('click', ()=>{
+      const base = quizData[containerId] || questions;
+      renderQuiz(containerId, freshQuizVersion(base));
+    });
+    btnrow.appendChild(newQuiz);
+
+    box.appendChild(btnrow);
+  }
+}
+
+Object.keys(quizData).forEach(id=>renderQuiz(id, quizData[id]));
+
+/* ============ FINAL MOCK EXAM ============ */
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+document.getElementById('finalStart').addEventListener('click', ()=>{
+  const allQ = Object.values(quizData).flat();
+  const picked = shuffle(allQ).slice(0, 20);
+  document.getElementById('finalArea').style.display='block';
+  document.getElementById('finalStart').style.display='none';
+  document.getElementById('finalScorePill').textContent = `Score: 0 / ${picked.length}`;
+
+  renderQuiz('finalQuiz', picked, true, (score)=>{
+    const pct = Math.round((score/picked.length)*100);
+    let msg = pct>=80 ? "🌟 Excellent! You're ready for Thursday." : pct>=60 ? "👍 Good work — review your weak spots." : "📚 Keep practicing — revisit the topic cheat-sheets.";
+    const box = document.getElementById('finalQuiz');
+    const banner = document.createElement('div');
+    banner.className='result-banner show';
+    banner.style.background = pct>=80 ? 'rgba(94,230,160,.15)' : pct>=60 ? 'rgba(255,209,102,.15)' : 'rgba(255,107,107,.15)';
+    banner.style.color = pct>=80 ? 'var(--good)' : pct>=60 ? 'var(--warn)' : 'var(--bad)';
+    banner.textContent = `Final Score: ${score}/${picked.length} (${pct}%) — ${msg}`;
+    box.appendChild(banner);
+
+    const btnrow = document.createElement('div');
+    btnrow.className='btnrow';
+    const retry = document.createElement('button');
+    retry.className='primary';
+    retry.textContent='🔁 Retake Mock Exam';
+    retry.addEventListener('click', ()=>{
+      document.getElementById('finalArea').style.display='none';
+      document.getElementById('finalStart').style.display='block';
+    });
+    btnrow.appendChild(retry);
+    box.appendChild(btnrow);
+  });
+});
+</script>
+</body>
+</html>
